@@ -12,6 +12,7 @@ Main tools consist in obtain following parameters:
 - Randles–Ševčík plots associated to ECSA analysis for cathodic and anodic peaks.
 - Area (cm<sup>2</sup>) for anodic peak-analysis.
 - Area (cm<sup>2</sup>) for cathodic peak-analysis.
+- Peak separation (Δp) for every scan analysis.
 
 # Python modules required for running script
 
