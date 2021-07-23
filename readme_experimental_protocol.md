@@ -14,7 +14,7 @@ First you need following materials in order to perform experiments:
 
 - Electrolyte
     - K<sub>4</sub>[Fe(CN)<sub>6</sub>]  0.004 M (0.000004 mol/cm<sup>3</sup>) dissolved in 0.1 M KCl (D = 7.6E−6 cm<sup>2</sup>/s)
-    - 
+   
 # Electrochemical technique
 
 Electrochemical techniques performed is cyclic voltammograms with a staircase profile (CV). Parameters: 
