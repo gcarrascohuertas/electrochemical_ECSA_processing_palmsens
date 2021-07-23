@@ -10,7 +10,7 @@ First you need following materials in order to perform experiments:
 
     - Platinum mesh as counter electrode (CE)). Here I used  a [Planium mesh from Goodfellow](http://www.goodfellow.com/A/Platinum-Mesh.html)
     - Ag/AgCl as reference electrode (RE). Here I used  a [Ag/AgCl/KCl (3 M)](https://www.basinc.com/products/MF-2056)
-    - Your working electrode (WE). Here I used a a polished  [Glassy carbon electrode](https://www.basinc.com/products/MF-2012)   (GC, 3 mm diameter, BASI).
+    - Your working electrode (WE). Here I used a a polished  [Glassy carbon electrode](https://www.basinc.com/products/MF-2012)   (GC, 3 mm diameter, Geometric area 0.0706 cm<sup>2</sup>, BASI).
 
 - Electrolyte
     - K<sub>4</sub>[Fe(CN)<sub>6</sub>]  0.004 M (0.000004 mol/cm<sup>3</sup>) dissolved in 0.1 M KCl (D = 7.6E−6 cm<sup>2</sup>/s)
