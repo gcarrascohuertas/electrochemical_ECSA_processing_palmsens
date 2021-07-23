@@ -27,8 +27,13 @@ Electrochemical techniques performed is cyclic voltammograms with a staircase pr
    - Step: 0.002 V.
    - Scan rates: 5 mV/seg , 10 mV/seg , 20 mV/seg , 40 mV/seg , 60 mV/seg ,80 mV/seg , 100 mV/seg , 125 mV/seg , 150 mV/seg , 200 mV/seg.
    
-# Electrochemical measurements
-Randles–Ševčík equation parameters:
+# Data treatment. Randles–Ševčík Analysis
+
+Before you obtain results from data read this website for undestand Randles–Ševčík analysis:
+
+https://en.wikipedia.org/wiki/Randles%E2%80%93Sevcik_equation
+
+Once you understand this analysis. Following parameters were applied as Randles–Ševčík equation parameters:
 
 - Faraday constant: 96485.33289 mol−1
 - Diffusion coeficient for K<sub>4</sub>[Fe(CN)<sub>6</sub>] 0.0000073 cm2/s
