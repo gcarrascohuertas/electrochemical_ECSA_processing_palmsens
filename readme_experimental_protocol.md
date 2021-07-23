@@ -29,7 +29,7 @@ Electrochemical techniques performed is cyclic voltammograms with a staircase pr
    
 # Electrochemical measurements
 
-# Experimental NOVA software routine 
+# Experimental PStrace software routine 
 
 Once you finish setting-up all the electrochemical cell components. Create experimental sequence with the parameteres displayed in the  screenshots attached in this project.  
 
