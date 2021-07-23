@@ -29,6 +29,18 @@ Pandas
 
     pip install pandas
     
+Scipy
+
+    pip install scipy
+    
+Sympy
+
+    pip install sympy
+ 
+Uncertainties  
+
+    pip install uncertainties
+
 Glob
 
     pip install glob3
@@ -40,7 +52,6 @@ Shutil
 Astropy 
 
     pip install astropy
-    
     
 # Additional coments
 
