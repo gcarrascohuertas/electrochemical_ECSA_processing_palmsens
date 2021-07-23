@@ -16,55 +16,68 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import matplotlib
-import io
-import astropy
-import csv
-import sys
-from astropy.table import Table, Column, MaskedColumn
-from astropy.stats import SigmaClip
-from numpy import mean
-from numpy import std
-from scipy.integrate import simps
-from astropy.convolution import Gaussian1DKernel, convolve
-import numpy as np
-import matplotlib.pyplot as plt
-import scipy
-from scipy.optimize import curve_fit
-from scipy.misc import derivative
-from scipy import stats
-import pandas as pd
-import uncertainties as unc
-import uncertainties.unumpy as unp
-import sympy as sp
-from astropy.table import Table, Column
-from scipy.optimize import fsolve
-from matplotlib import pylab
+import matplotlib # import matplotlib library
+import io # import io library
+import astropy # import astropy library
+import csv # import csv library
+import sys # import sys library
+from astropy.table import Table, Column, MaskedColumn # import astropy library
+from astropy.stats import SigmaClip # import astropy library
+from numpy import mean  # import numpy library
+from numpy import std # import numpy library
+from scipy.integrate import simps # import scipy library
+from astropy.convolution import Gaussian1DKernel, convolve # import astropy library
+import numpy as np  # import numpy library
+import matplotlib.pyplot as plt  # import matplotlib library
+import scipy # importscipy library
+from scipy.optimize import curve_fit # import scipy library
+from scipy.misc import derivative # import scipy library
+from scipy import stats # import scipy library
+import pandas as pd # import pandas library
+import uncertainties as unc # import uncertainties library
+import uncertainties.unumpy as unp # import uncertainties library
+import sympy as sp # import simpy library
+from astropy.table import Table, Column # import astropy library
+from scipy.optimize import fsolve # import scipy library
+from matplotlib import pylab  # import matplotlib library
 import glob #module wich create list of strings of a directory
 import shutil #module which moves files
-import os 
-from astropy.io import ascii
-from numpy.linalg import inv
-import matplotlib.pyplot as plt
+import os  # import os library
+from astropy.io import ascii # import astropy library
+from numpy.linalg import inv # import numpy library
+import matplotlib.pyplot as plt  # import matplotlib library
 
-from numpy.linalg import inv
+from numpy.linalg import inv # import numpy library
 
-import scipy as scipy
-from scipy import optimize
-from matplotlib.ticker import AutoMinorLocator
-from matplotlib import gridspec
-import matplotlib.ticker as ticker
+import scipy as scipy # import scipy library
+from scipy import optimize # import scipy library
+from matplotlib.ticker import AutoMinorLocator  # import matplotlib library
+from matplotlib import gridspec # import matplotlib library
+import matplotlib.ticker as ticker  # import matplotlib library
 
+#-------------------------------------PREAMBLE--------------------------------------------------
 np.warnings.filterwarnings('ignore')
-
-SIZE_Font = 15
 
 column_9 =  0 # Potential applied (V)
 column_11 = 1 # WE(1).Current (A)
 column_13 = 2 # Index
 
 
-size=15
+
+files = glob.glob('*.txt') #load every file with .txt extension 
+print(files) #print in screen "files loaded"
+#Raw text remarks
+input_delimiter= "\t" #de raw data delimiter is tabular
+input_skip_space=0 #we want 2 skip space from raw data
+#Path in which we are working
+path=os.getcwd() #get path 
+
+scan_rate = [0.005,0.010,0.020,0.040,0.060,0.080,0.100,0.125,0.150,0.200] #list of scan rates
+
+#-------------------------------------PREAMBLE Graphs--------------------------------------------------
+
+SIZE_Font = 15 # Size fonts for plots
+size=15 # Size fonts for plots
 params = {'legend.fontsize': 'large',
           #'figure.figsize': (20,8),
           'axes.labelsize': size,
@@ -74,33 +87,19 @@ params = {'legend.fontsize': 'large',
           'axes.titlepad': 25}
 plt.rcParams.update(params)
 
-
-
-#-------------------------------------PREAMBLE--------------------------------------------------
-#load files
-files = glob.glob('*.txt') #load every file with .txt extension 
-print(files) #print in screen "files loaded"
-#Raw text remarks
-input_delimiter= "\t" #de raw data delimiter is tabular
-input_skip_space=0 #we want 2 skip space from raw data
-#Path in which we are working
-path=os.getcwd() #get path 
-
-
-label = ['5 mV/seg',"10 mV/seg",'20 mV/seg',"40 mV/seg","60 mV/seg","80 mV/seg","100 mV/seg","125 mV/seg","150 mV/seg","200 mV/seg"] #label set for graph
-color = ['black','red','blue',"green","orange","purple","yellow","gray","olive","brown"] #colors set for graphs
-scan_rate = [0.005,0.010,0.020,0.040,0.060,0.080,0.100,0.125,0.150,0.200]
+label = ['5 mV/seg',"10 mV/seg",'20 mV/seg',"40 mV/seg","60 mV/seg","80 mV/seg","100 mV/seg","125 mV/seg","150 mV/seg","200 mV/seg"] #list of labels used for plots
+color = ['black','red','blue',"green","orange","purple","yellow","gray","olive","brown"] #list of colors used for plots
 
 #---------------------------------------------------------------------------------------
 def new_directories(folder1,folder2):
 
-    #This  function create new folders named as folder1 and folder2 in where will be stored figures and data separately and has been created 
-    #by Gaspar Carrasco. gasparcarrascohuertas@gmail.com for contact
+    """This  function create new folders named as folder1 and folder2 in where will be stored figures and data separately and has been created 
+    by Gaspar Carrasco. gasparcarrascohuertas@gmail.com for contact"""
 
 
     folder_1= folder1 #folder 1
     folder_2= folder2 #folder 2
-    path= os.getcwd() + "\\" #obtain path
+    path= os.getcwd() + "/" #obtain path
     dir1 = path+folder_1  #'path_to_my_folder_1'
     dir2 = path+folder_2  #'path_to_my_folder_2'
 
@@ -117,32 +116,33 @@ def new_directories(folder1,folder2):
             file_path = os.path.join(dir2, the_file)
     print("-------------------------------------END CREATE NEW DIRECTORIES FUNCTION---------------------------------------------------")
 #---------------------------------------------------------------------------------------
-def removing_files_in_folder(folder1,folder2):
+def removing_files_in_folder(folder1,folder2): 
 
-    #This  function remove every file in new folders named as folder1 and folder2  and has been created 
-    #by Gaspar Carrasco. gasparcarrascohuertas@gmail.com for contact
+    """This  function remove every file in new folders named as folder1 and folder2  and has been created 
+    by Gaspar Carrasco. gasparcarrascohuertas@gmail.com for contact"""
 
-    path= os.getcwd() + "\\" #Obtain path 
+    path= os.getcwd() + "/" #Obtain path 
     folder_1= folder1 #folder 1
     folder_2= folder2 #folder 2
 
-    list_files = os. listdir(path+folder1)  #list all the files in folder 1
 
-    files_figures = glob.glob(path+folder1+ "/*") 
-    for f in files_figures:  #for every file  file in folder 2 remove
-     os.remove(f)  
+    files_figures = glob.glob(path+folder1+ "/*")  #list all the files contained in folder 1
+    for f in files_figures:  #for every file contained in folder 1
+     os.remove(f)   #remove files
 
-    files_data = glob.glob(path+folder2+ "/*")
-    for f in files_data:   #for every file  file in folder 2 remove
-     os.remove(f) 
+    files_data = glob.glob(path+folder2+ "/*") #list all the files contained in folder 2
+    for f in files_data:   #for every file contained in folder 2
+     os.remove(f)   #remove files
 
     print("-------------------------------------END REMOVING FILES IN FOLDERS FUNCTION---------------------------------------------------")
 #---------------------------------------------------------------------------------------
-def file_change_name(imput):
+def file_change_name(imput): #Use this function only to rename
 
-    #This  function change the name of O2 files in order to obtain ordered list in our directory and has been created by Gaspar Carrasco. gasparcarrascohuertas@gmail.com for contact
 
-    for name_old in imput: #for every file in our O2 list 
+    """This  function change the name of  files in order to obtain ordered list in our directory and has been created 
+    by Gaspar Carrasco. gasparcarrascohuertas@gmail.com for contact"""
+
+    for name_old in imput: #for every file in our list 
 
         a=name_old[5:-6] # characters located between 3 and -7 position
         b = float(a) # convert characters selected to float
@@ -151,56 +151,46 @@ def file_change_name(imput):
         name_new= name_old.replace(a, c)
         print("Renamed file is: " + name_new)
         print(name_old, ' ------- ',   name_new)
-        os.rename(name_old,name_new)
+        os.rename(name_old,name_new) #renamme  file
     print("-------------------------------------END CHANGE NAME OF OXYGEN FILES FUNCTION---------------------------------------------------")
 #---------------------------------------------------------------------------------------
 def ECSA():
 
-    #This  function plot all the scan rates performed in electrochemical surface area analysis  and has been created 
-    #by Gaspar Carrasco. gasparcarrascohuertas@gmail.com for contact
+    """This  function plot all the scan rates performed in electrochemical surface area analysis  and has been created 
+    by Gaspar Carrasco. gasparcarrascohuertas@gmail.com for contact"""
 
     files = glob.glob(path +'**/**/data_mean_CV*.txt',recursive=True) #load every file with .txt extension 
     print(files) #print in screen "files loaded"
-
     counter=0 #counter set to 0
+    fig, ax = plt.subplots() #subplot name as ax
 
-    fig, ax = plt.subplots()
-
-    for file in files:   ## For each file in files
+    for file in files:   # For each file in files
 
         f = np.genfromtxt(file, delimiter="\t") #charge the file with tabular delimiter and skip header of 1 line
         WE_potential = f[:, 0] #Load from the "file" the column asociated to WE potential (V)
         WE_current = f[:, 1]  #Load from the "file" the column asociated to WE current (A)
         WE_current_corrected=WE_current #change WE current to microamperes
 
-        
-
         ax.plot(WE_potential,WE_current_corrected,color=color[counter],label=label[counter]) #Plot the "WE potential (V)" vs  "WE current (A)"
         counter=counter+1 #we add 1 to counter for colors and labels
 
     #--------------------PLOTS OPTIONS--------------------------
+ 
+    ax.tick_params(axis="y", right=True, direction='in')  #ticks Y-axe
+    ax.tick_params(axis="x",top=True , direction='in')  #ticks X-axe
+    ax.legend(loc='lower right', prop={'size':12}) #graph plot legend
+    ax.set_xlabel('Potential vs. Ag/AgCl , 3.5 M (V)',  fontsize= SIZE_Font)  #graph plot X-Label
+    ax.set_ylabel('Current intensity (\u00B5A) ',  fontsize= SIZE_Font)   #graph plot Y-Label
 
-
-    ax.tick_params(axis="y", right=True, direction='in')
-    ax.tick_params(axis="x",top=True , direction='in')
-    ax.legend(loc='lower right', prop={'size':12}) #graph legend
-
-    ax.set_xlabel('Potencial vs. Ag/AgCl (V)',  fontsize= SIZE_Font)
-    ax.set_ylabel('Intensidad de corriente (\u00B5A) ',  fontsize= SIZE_Font)
-
-    #plt.title("Cyclic voltammetry \n Electrode Area")# graph title
-    ax.set_xlim(-0.1,1.2)
-    ax.set_ylim(-100,100)  # Y axe limits
-    #plt.grid()# paint a grid over the graph
-    ax.figure.savefig("figure_ECSA_GCE_3mm.png")
-    ax.figure.savefig("figure_ECSA_GCE_3mm.eps")
-
-
+    ax.set_xlim(-0.1,1.2) # X-axe limits
+    ax.set_ylim(-100,100)  # Y-axe limits
+    ax.figure.savefig("figure_ECSA_GCE_3mm.png") #Save plot as .png
+    ax.figure.savefig("figure_ECSA_GCE_3mm.eps") #Save plot as .eps
 
     shutil.move("figure_ECSA_GCE_3mm.png",  "figures") #Move the graph as "name.png" to folder figures
     shutil.move("figure_ECSA_GCE_3mm.eps",  "figures") #Move the graph as "name.png" to folder figures
     #plt.show() # Show graph 
-    #ax.clf() #clear the figure - you can still paint another plot onto it
+    #plt.clf() #clear the plot
     
     print("-------------------------------------END PLOT ECSA---------------------------------------------------")
 #---------------------------------------------------------------------------------------
@@ -211,30 +201,27 @@ def operation():
 
     files_red = glob.glob(path +'**/**/data_info_table_reduction*.txt',recursive=True) #load every file with .txt extension 
     print(files_red) #print in screen "files loaded"
-    list1=[]
-    list2=[]
+    list1=[]  #empty list  
+    list2=[]  #empty list  
 
 
-    lista_potencial_oxidacion = []
-    lista_potencial_reduccion = []
+    lista_potencial_oxidacion = [] #empty list for oxidation potential 
+    lista_potencial_reduccion = [] #empty list for reduction potential 
 
 
-    for file in files_ox:
+    for file in files_ox:  # For each file in files_ox
 
         f1 = np.genfromtxt(file, delimiter=" ", skip_header=1)
-        #print(f1)
         intersect_oxidation = f1[2]
-        #print(intersect_oxidation)
         intensity_oxidation_peak = f1[1]
         potencial_oxidation_peak = f1[0]
 
-        #print(intensity_oxidation_peak)
         ipa=intensity_oxidation_peak - intersect_oxidation 
         print("Intensity anodic peak current (microA):  " +str(ipa))
         list1.append(ipa)
         lista_potencial_oxidacion.append( potencial_oxidation_peak)
 
-    for file in files_red:
+    for file in files_red:  # For each file in files_red
 
         f2 = np.genfromtxt(file, delimiter=" ", skip_header=1)
         intersect_reduction = f2[2]
@@ -257,11 +244,11 @@ def operation():
 
 
     array_3=np.array(lista_potencial_oxidacion)
-    np.savetxt("data_lista_potencial_oxidacion.txt", array_3.transpose())
+    np.savetxt("data_list_potential_oxidation.txt", array_3.transpose())
 
     
     array_4=np.array(lista_potencial_reduccion)
-    np.savetxt("data_lista_potencial_reduccion.txt", array_4.transpose())
+    np.savetxt("data_list_potential_reduction.txt", array_4.transpose())
 
 
     print("-------------------------------------END OPERATION FUNCTION---------------------------------------------------")
@@ -283,31 +270,29 @@ def Randles_Sevick_equation():
     #Randles–Sevcik equation (anodic peak)
     #ip=268600*(n**3/2)*(A)*(D**0.5)*(C)*(value**0.5)
 
-    fig, ax1 = plt.subplots()
-    fig, ax2 = plt.subplots()
+    fig, ax1 = plt.subplots() #subplot named as ax1
+    fig, ax2 = plt.subplots()  #subplot named as ax2
     ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-    list_1 = []
-    list_2 = []
+    list_1 = []   #empty list  
+    list_2 = []   #empty list  
 
     #--------------------------------------CATHODIC PROCESS-------------------------------------
 
-    f_1 = np.genfromtxt("data_ipc.txt")
+    f_1 = np.genfromtxt("data_ipc.txt") #load file named  "data_ipc.txt" as numpy array
     ipc = np.array(f_1)
-    #print(ipc)
     ip_1 = ipc  # Cathodic peak current in microamps (microA)
     ip_corrected_1=ip_1*0.000001 #Cathodic  peak current  in amps (A) 
 
     list_1=(ipc,ip_corrected_1) #list with anodic peak current in amps and in microamps
     array_1=np.array(list_1) #array of list 
-    #print(array_1)
     tabla_1= Table(array_1.transpose()) #table of array
-    new_column_1=Column([0.005,0.010,0.020,0.040,0.060,0.080,0.100,0.125,0.150,0.200], name="Scan rate (V/seg)")
+    new_column_1=Column(scan_rate, name="Scan rate (V/seg)")
     tabla_1.add_column(new_column_1) #add new column 
     tabla_1.write("data_info_table_oxidation_global.txt", format='ascii')
 
-    f_2 = np.genfromtxt("data_info_table_oxidation_global.txt", delimiter=" ", skip_header=1)
+    f_2 = np.genfromtxt("data_info_table_oxidation_global.txt", delimiter=" ", skip_header=1) #load file named  "data_info_table_oxidation_global.txt" as numpy array with tab deliminter and skip first row
     scan_rate_list_1 = f_2[:, 2]  #scan rate in V/s
-    print(scan_rate_list_1)
+    print("scan_rate_list_1"+  str(scan_rate_list_1))
 
     #-------------------- ip vs v^1/2 LINEAR REGRESSION--------------------------
     #---------FIRST-----------
@@ -378,24 +363,13 @@ def Randles_Sevick_equation():
         smy = np.sqrt(n * s2 / den)
         sby = np.sqrt(Sx2 * s2 / den)
 
-
-
         return my, by, ry, smy, sby    
 
-
-
     print(lsqfity(x_interval_1,y_interval_1))
-
-
-
-
-
 
     #-------------------- AREA CALCULATING--------------------------
     Area_final_cathodic=(a_1)/((269000)*(1)*(C)*((D**0.5))) #calculate the area
     print("Area (cm2) Anodic " + str(Area_final_cathodic))
-
-
 
     text_file_1 = open("data_area_cathodic_convolution.txt", "w")
     n_1 = text_file_1.write(str(Area_final_cathodic))
@@ -406,15 +380,13 @@ def Randles_Sevick_equation():
 
     f_3 = np.genfromtxt("data_ipa.txt")
     ipa = np.array(f_3)
-    #print(ipa)
     ip_2 = ipa  # Cathodic peak current in microamps (microA)
     ip_corrected_2=ip_2*0.000001 #Cathodic  peak current  in amps (A) 
 
     list_2=(ipa,ip_corrected_2) #list with anodic peak current in amps and in microamps
     array_2=np.array(list_2) #array of list 
-    #print(array_2)
     tabla_2= Table(array_2.transpose()) #table of array
-    new_column_2=Column([0.005,0.010,0.020,0.040,0.060,0.080,0.100,0.125,0.150,0.200], name="Scan rate (V/seg)")
+    new_column_2=Column(scan_rate, name="Scan rate (V/seg)")
     tabla_2.add_column(new_column_2) #add new column 
     tabla_2.write("data_info_table_reduction_global.txt", format='ascii')
 
@@ -460,7 +432,6 @@ def Randles_Sevick_equation():
         ry    =    correlation coefficient
         smy   =    standard deviation of the slope
         sby   =    standard deviation of the y-intercept
-
         """
 
         X, Y = map(np.asanyarray, (X, Y))
@@ -491,17 +462,9 @@ def Randles_Sevick_equation():
         smy = np.sqrt(n * s2 / den)
         sby = np.sqrt(Sx2 * s2 / den)
 
-
-
         return my, by, ry, smy, sby    
 
-
-
     print(lsqfity(x_interval_2,y_interval_2))
-
-
-
-
 
     #-------------------- AREA CALCULATING--------------------------
     Area_final_anodic=abs((a_2)/((269000)*(1)*(C)*((D**0.5)))) #calculate the area
@@ -511,92 +474,66 @@ def Randles_Sevick_equation():
     n_2 = text_file_2.write(str(Area_final_anodic))
     text_file_2.close()
 
-
     #--------------------PLOTS--------------------------
-
 
     ax1.plot((scan_rate_list_1**0.5),ip_corrected_1,"o", color='black') #"plot root square of scan rate" vs "ipc"
     ax2.plot((scan_rate_list_2**0.5),ip_corrected_2,"o", color='red') #"plot root square of scan rate" vs "ipc"
 
-
     #--------------------PLOTS OPTIONS--------------------------
-    #plt.title("Randles Sevick plot area ") # graph title
-    #plt.ylim(-50,50)   # Y axe limits
-    #plt.grid() # paint a grid over the graph
-    #plt.show() # Show graph 
+    #--------------------ax1 PLOT--------------------------
 
-
-
-
-
-    ax1.tick_params(axis="y", right=True, direction='in', labelcolor="red")
-    ax1.tick_params(axis="x",top=True , direction='in')
-    #ax.legend(loc='lower right', prop={'size':8}) #graph legend
-    ax1.set_xlabel(r"Velocidad de barrido $v^\frac{1}{2}$ (V/s) ",  fontsize= SIZE_Font)
-    ax1.set_ylabel('Ip anódica (A)',  fontsize= SIZE_Font,  color="red")
+    ax1.tick_params(axis="y", right=True, direction='in', labelcolor="red")     #ticks Y-axe
+    ax1.tick_params(axis="x",top=True , direction='in')     #ticks X-axe
+    #ax.legend(loc='lower right', prop={'size':8}) #graph plot legend
+    ax1.set_xlabel(r"Scan rate $v^\frac{1}{2}$ (V/s) ",  fontsize= SIZE_Font)   #graph plot X-Label
+    ax1.set_ylabel('Anodic peak  (Ipa , A)',  fontsize= SIZE_Font,  color="red")   #graph plot Y-Label
     #plt.title("Cyclic voltammetry \n Electrode Area")# graph title
-    ax1.set_xlim(0,0.5)
-    #plt.grid()# paint a grid over the graph
-    # Change the y ticklabel format to scientific format
-    ax1.set_ylim(-0.0001,0.0001)  # Y axe limits
-    ax1.ticklabel_format(axis='y', style='sci', scilimits=(-2, 2))
+    ax1.set_xlim(0,0.5)   #X-axe limits
+    ax1.set_ylim(-0.0001,0.0001)  # Y-axe limits
+    ax1.ticklabel_format(axis='y', style='sci', scilimits=(-2, 2))  #ticks Y-axe
 
+    #--------------------ax2 PLOT--------------------------
 
-
-    ax2.tick_params(axis="y", right=True, direction='in',  labelcolor="black")
-    ax2.tick_params(axis="x",top=True , direction='in')
-    #ax.legend(loc='lower right', prop={'size':8}) #graph legend
-    ax2.set_xlabel(r"Velocidad de barrido $v^\frac{1}{2}$ (V/s) ",  fontsize= SIZE_Font)
-    ax2.set_ylabel('Ip catódica (A)',  fontsize= SIZE_Font,  color="black")
+    ax2.tick_params(axis="y", right=True, direction='in',  labelcolor="black") #ticks Y-axe
+    ax2.tick_params(axis="x",top=True , direction='in') #ticks X-axe
+    #ax.legend(loc='lower right', prop={'size':8}) #graph plot legend
+    ax2.set_xlabel(r"Scan rate $v^\frac{1}{2}$ (V/s) ",  fontsize= SIZE_Font)
+    ax2.set_ylabel('Cathodic peak  (Ipc , A)',  fontsize= SIZE_Font,  color="black")
     #plt.title("Cyclic voltammetry \n Electrode Area")# graph title
-    ax2.set_xlim(0,0.5)
+    ax2.set_xlim(0,0.5) # X axe limits
     ax2.set_ylim(-0.0001,0.0001)  # Y axe limits
-    #plt.grid()# paint a grid over the graph
-    # Change the y ticklabel format to scientific format
-    #ax1.set_ylim(0,0.0005)  # Y axe limits
-    ax2.ticklabel_format(axis='y', style='sci', scilimits=(-2, 2))
+    ax2.ticklabel_format(axis='y', style='sci', scilimits=(-2, 2))  #ticks Y-axe
 
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
 
 
-    ax1.figure.savefig("figure_randles_sevick_plot_ECSA_GCE_3mm.png",bbox_inches='tight')
-    ax1.figure.savefig("figure_randles_sevick_plot_ECSA_GCE_3mm.eps",bbox_inches='tight')
+    ax1.figure.savefig("figure_randles_sevick_plot_ECSA_GCE_3mm.png",bbox_inches='tight')  #Save plot as .png
+    ax1.figure.savefig("figure_randles_sevick_plot_ECSA_GCE_3mm.eps",bbox_inches='tight')  #Save plot as .eps
     shutil.move("figure_randles_sevick_plot_ECSA_GCE_3mm.png",  "figures") #Move the graph as "name.png" to folder figures
     shutil.move("figure_randles_sevick_plot_ECSA_GCE_3mm.eps",  "figures") #Move the graph as "name.png" to folder figures
 
-
-
-
-    plt.clf() #clear the figure - you can still paint another plot onto it
+    plt.clf() #clear the plot
     
 
     print("-------------------------------------END RANDLES-SEVICK FUNCTION---------------------------------------------------")
 #---------------------------------------------------------------------------------------
 def Deltap():
 
+    """ This function calculate delta p , known as difference between oxidation an reduction peak potentials for all scan analysis (5 mV/seg)
+    and     has been created by Gaspar, gasparcarrascohuertas@gmail.com for contact
+    """
 
-    f_1 = np.genfromtxt("data_lista_potencial_oxidacion.txt")
-    ppc = np.array(f_1)
-    #print(ppc)
+    f_1 = np.genfromtxt("data_list_potential_oxidation.txt")
+    ppc = np.array(f_1)  #make array from data
  
-    f_2 = np.genfromtxt("data_lista_potencial_reduccion.txt")
-    ppa = np.array(f_2)
-    #print(ppa)
+    f_2 = np.genfromtxt("data_list_potential_reduction.txt")
+    ppa = np.array(f_2)  #make array from data
 
+    potential_oxidation= f_1[0] #data associated to potential of oxidation peak 
+    potential_reduction = f_2[0] #data associated to potential of reduction peak 
 
-
-
-
-    potencial_oxidacion= f_1[0]
-
-
-    #print(potencial_oxidacion)
-
-    potencial_reduccion = f_2[0]
-    #print(potencial_reduccion)
-
-    resta=  ppc -  ppa
-    print(resta)
+    substraction =  ppc -  ppa #substraction operation
+    print("DeltaP value for all scan rate analysis is: "+str(substraction))
 
 
 
@@ -606,11 +543,10 @@ def move_data():
     has been created by Gaspar, gasparcarrascohuertas@gmail.com for contact
     """
 
-    files = glob.glob(path+ "/data*.txt")
-    print(files)
-    print("Files in moved to directories are: "+str(files))
-    for f in files:
-     shutil.move(f, "data")
+    files = glob.glob(path+ "/data*.txt") #list every file named as data in .txt format
+    print("Files which are going to be moved to directories are: "+str(files))
+    for f in files: 
+     shutil.move(f, "data") #Move file to folder named as data 
     print("-------------------------------------END MOVING DATA .TXT  FUNCTION---------------------------------------------------")
 #---------------------------------------------------------------------------------------
 new_directories("figures", "data")
