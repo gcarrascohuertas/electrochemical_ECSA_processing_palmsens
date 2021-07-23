@@ -8,8 +8,8 @@ First you need following materials in order to perform experiments:
 
 - Three-electrode cell
 
-    - Platinum mesh as counter electrode (CE)
-    - Ag/AgCl/KCl (3.5M) as reference electrode (RE)
+    - Platinum mesh as counter electrode (CE)). Here I used  a [Planium mesh from Goodfellow](http://www.goodfellow.com/A/Platinum-Mesh.html)
+    - Ag/AgCl as reference electrode (RE). Here I used  a [Ag/AgCl/KCl (3 M)](https://www.basinc.com/products/MF-2056)
     - Your working electrode (WE). Here I used a a polished  [Glassy carbon electrode](https://www.basinc.com/products/MF-2012)   (GC, 3 mm diameter, BASI).
 
 - Electrolyte
