@@ -26,7 +26,7 @@ Electrochemical techniques performed is cyclic voltammograms with a staircase pr
    - Number of scans: 4.
    - Step: 0.002 V.
    - Scan rates: 5 mV/seg , 10 mV/seg , 20 mV/seg , 40 mV/seg , 60 mV/seg ,80 mV/seg , 100 mV/seg , 125 mV/seg , 150 mV/seg , 200 mV/seg.
-   - 
+   
 # Electrochemical measurements
 
 # Experimental NOVA software routine 
