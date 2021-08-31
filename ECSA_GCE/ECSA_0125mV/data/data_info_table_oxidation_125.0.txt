@@ -1,2 +1,0 @@
-"WE Potential max (V)" "WE Current max (µA)" "y-axe intersection (µA)" "Scan rate (V/seg)"
-0.324963 35.588633333333334 0.9375186939145816 0.125
