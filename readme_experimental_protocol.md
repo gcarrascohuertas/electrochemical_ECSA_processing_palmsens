@@ -25,13 +25,17 @@ Electrochemical techniques performed is cyclic voltammograms with a staircase pr
    - Stop potential: 0.69 V. 
    - Number of scans: 4.
    - Step: 0.002 V.
-   - Scan rates: 5 mV/seg , 10 mV/seg , 20 mV/seg , 40 mV/seg , 60 mV/seg ,80 mV/seg , 100 mV/seg , 125 mV/seg , 150 mV/seg , 200 mV/seg.
+   - Scan rates: 5 mV/seg , 10 mV/seg , 20 mV/seg , 40 mV/seg , 60 mV/seg.
    
 # Data treatment. Randles–Ševčík Analysis
 
 Before you obtain results from data read this website for undestand Randles–Ševčík analysis:
 
 https://en.wikipedia.org/wiki/Randles%E2%80%93Sevcik_equation
+
+Also, you need to know which kind of system (reversible or pseudoreversible) do you have depending on your peak separation for your lowest scan rate values.
+
+# Data treatment. Randles–Ševčík parameters
 
 Once you understand this analysis. Following parameters were applied as Randles–Ševčík equation parameters:
 
